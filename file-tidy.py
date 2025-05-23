@@ -190,15 +190,15 @@ def sorting_summary(documents_moved, target_directory):
 
 # Organization process
 if args.organize:
-    # Initializing variables for summary
-    documents_moved = 0
-    spreadsheets_moved = 0
-    images_moved = 0
-    audio_moved = 0
-    videos_moved = 0
-    scripts_moved = 0
-    archives_moved = 0
-    other_moved = 0
+    # Initializing dictionary for summary
+    files_moved = {"Documents Moved": 0,
+                   "Spreadsheets Moved": 0,
+                   "Images Moved": 0,
+                   "Audio Moved": 0,
+                   "Videos Moved": 0,
+                   "Scripts Moved": 0,
+                   "Archives Moved": 0,
+                   "Other Moved": 0}
 
     # creating sorted directories
     create_sorted_directories(directory_path)
@@ -215,46 +215,45 @@ if args.organize:
         
         if file_extension in [".docx", ".doc", ".pdf", ".rtf", ".txt"]:
             shutil.move(file_full_path, os.path.join(directory_path, "Documents_Sorted"))
-            documents_moved += 1
+            files_moved["Documents Moved"] += 1
 
         elif file_extension in [".csv", ".xlsx", ".xsl", ".ods"]:
             shutil.move(file_full_path, os.path.join(directory_path, "Spreadsheets_Sorted"))
-            spreadsheets_moved += 1
+            files_moved["Spreadsheets Moved"] += 1
             
         elif file_extension in [".jpg", ".jpeg", ".png", ".webp"]:
             shutil.move(file_full_path, os.path.join(directory_path, "Images_Sorted"))
-            images_moved += 1
+            files_moved["Images Moved"] += 1
 
         elif file_extension in [".mp3", ".wav", ".aud", ".ogg", ".m4a", ".wma"]:
             shutil.move(file_full_path, os.path.join(directory_path, "Audio_Sorted"))
-            audio_moved += 1
+            files_moved["Audio Moved"] += 1
 
         elif file_extension in [".mov", ".mp4", ".mkv", ".wmv", ".webm"]:
             shutil.move(file_full_path, os.path.join(directory_path, "Video_Sorted"))
-            videos_moved += 1
+            files_moved["Videos Moved"] += 1
 
         elif file_extension in [".py", ".c", ".cpp", ".h", ".r"]:
             shutil.copy(file_full_path, os.path.join(directory_path, "Scripts_Sorted"))
-            scripts_moved += 1
+            files_moved["Scripts Moved"] += 1
 
         elif file_extension in [".zip", ".rar", ".tar", ".gz", ".7z"]:
             shutil.move(file_full_path, os.path.join(directory_path, "Archives_Sorted"))
-            archives_moved += 1
+            files_moved["Archives Moved"] += 1
 
         else:
             shutil.copy(file_full_path, os.path.join(directory_path, "Other_Sorted"))
-            other_moved += 1
+            files_moved["Other Moved"] += 1
     
     # remove the newly created unused/empty directories
     remove_empty_directories(directory_path)
 
     # print summary of movement
     if args.summary:
-        sorting_summary(documents_moved, "Documents_Sorted")
-        sorting_summary(spreadsheets_moved, "Spreadsheets_Sorted")
-        sorting_summary(images_moved, "Images_Sorted")
-        sorting_summary(audio_moved, "Audio_Sorted")
-        sorting_summary(videos_moved, "Video_Sorted")
-        sorting_summary(scripts_moved, "Scripts_Sorted")
-        sorting_summary(archives_moved, "Archives_Sorted")
-        sorting_summary(other_moved, "Other_Sorted")
+        for element in files_moved:
+            file_count = int(files_moved.get(element))
+            if file_count > 0:
+                print(f"{element}: {file_count}")
+
+
+    
