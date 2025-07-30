@@ -4,6 +4,16 @@ import argparse
 import os
 import shutil
 
+FILE_DIRECTORIES = {
+    "Documents": ["Documents_Sorted", ".docx", ".doc", ".pdf", ".rtf", ".txt"],
+    "Spreadsheets": ["Spreadsheets_Sorted", ".csv", ".xlsx", ".xsl", ".ods"],
+    "Images": ["Images_Sorted", ".jpg", ".jpeg", ".png", ".webp"],
+    "Audio": ["Audio_Sorted", ".mp3", ".wav", ".aud", ".ogg", ".m4a", ".wma"],
+    "Video": ["Video_Sorted", ".mov", ".mp4", ".mkv", ".wmv", ".webm"],
+    "Scripts": ["Scripts_Sorted", ".py", ".c", ".cpp", ".h", ".r"],
+    "Archives": ["Archives_Sorted", ".zip", ".rar", ".tar", ".gz", ".7z"]
+}
+
 # instantiate lists
 hash_list = []
 duplicate_files = []
@@ -26,7 +36,6 @@ dedupe_group.add_argument('-fd', '--force-delete', action='store_true', help="De
 
 # File organization settings
 fo_group.add_argument('-o', '--organize', action='store_true', help="File organization mode")
-fo_group.add_argument('-s', '--summary', action='store_true', help="Print a summary of processes executed")
 
 # parse given arguments
 args = parser.parse_args()
@@ -156,8 +165,6 @@ if args.dedupe:
 # ***************************************************************************
 # **************************** File-Organization ****************************
 # ***************************************************************************
-# global list of the sorted directory names
-directories = ["Documents_Sorted", "Spreadsheets_Sorted", "Images_Sorted", "Audio_Sorted", "Video_Sorted", "Scripts_Sorted", "Archives_Sorted", "Other_Sorted"]
 
 # File sorting Functions
 # Gets all file names
@@ -170,36 +177,21 @@ def get_dir_files(file_path):
     return file_list
             
 def create_sorted_directories(file_path):
-    for directory in directories:
+    for directory in FILE_DIRECTORIES:
         try:
-            os.mkdir(os.path.join(file_path, directory))
+            os.mkdir(os.path.join(file_path, FILE_DIRECTORIES[directory][0]))
         except FileExistsError:
             pass
 
 def remove_empty_directories(file_path):
-    for directory in directories:
+    for directory in FILE_DIRECTORIES:
         try:
-            os.rmdir(os.path.join(file_path, directory))
+            os.rmdir(os.path.join(file_path, FILE_DIRECTORIES[directory][0]))
         except OSError:
             pass
 
-# Displays amount of files moved to target directory
-def sorting_summary(documents_moved, target_directory):
-    if documents_moved > 0:
-        print(documents_moved, "files moved to", str(target_directory))
-
-# Organization process
+# File organization process
 if args.organize:
-    # Initializing dictionary for summary
-    files_moved = {"Documents Moved": 0,
-                   "Spreadsheets Moved": 0,
-                   "Images Moved": 0,
-                   "Audio Moved": 0,
-                   "Videos Moved": 0,
-                   "Scripts Moved": 0,
-                   "Archives Moved": 0,
-                   "Other Moved": 0}
-
     # creating sorted directories
     create_sorted_directories(directory_path)
 
@@ -211,49 +203,12 @@ if args.organize:
         file_extension = file_extension.lower()
         file_full_path = os.path.join(directory_path, file)
         if not os.path.isfile(file_full_path):
-            continue  # Skip if not a file
-        
-        if file_extension in [".docx", ".doc", ".pdf", ".rtf", ".txt"]:
-            shutil.move(file_full_path, os.path.join(directory_path, "Documents_Sorted"))
-            files_moved["Documents Moved"] += 1
+            continue
 
-        elif file_extension in [".csv", ".xlsx", ".xsl", ".ods"]:
-            shutil.move(file_full_path, os.path.join(directory_path, "Spreadsheets_Sorted"))
-            files_moved["Spreadsheets Moved"] += 1
-            
-        elif file_extension in [".jpg", ".jpeg", ".png", ".webp"]:
-            shutil.move(file_full_path, os.path.join(directory_path, "Images_Sorted"))
-            files_moved["Images Moved"] += 1
-
-        elif file_extension in [".mp3", ".wav", ".aud", ".ogg", ".m4a", ".wma"]:
-            shutil.move(file_full_path, os.path.join(directory_path, "Audio_Sorted"))
-            files_moved["Audio Moved"] += 1
-
-        elif file_extension in [".mov", ".mp4", ".mkv", ".wmv", ".webm"]:
-            shutil.move(file_full_path, os.path.join(directory_path, "Video_Sorted"))
-            files_moved["Videos Moved"] += 1
-
-        elif file_extension in [".py", ".c", ".cpp", ".h", ".r"]:
-            shutil.copy(file_full_path, os.path.join(directory_path, "Scripts_Sorted"))
-            files_moved["Scripts Moved"] += 1
-
-        elif file_extension in [".zip", ".rar", ".tar", ".gz", ".7z"]:
-            shutil.move(file_full_path, os.path.join(directory_path, "Archives_Sorted"))
-            files_moved["Archives Moved"] += 1
-
-        else:
-            shutil.copy(file_full_path, os.path.join(directory_path, "Other_Sorted"))
-            files_moved["Other Moved"] += 1
+        for directory in FILE_DIRECTORIES:
+            if file_extension in FILE_DIRECTORIES[directory][1:]:
+                shutil.move(file_full_path, os.path.join(directory_path, FILE_DIRECTORIES[directory][0]))
+                break
     
     # remove the newly created unused/empty directories
     remove_empty_directories(directory_path)
-
-    # print summary of movement
-    if args.summary:
-        for element in files_moved:
-            file_count = int(files_moved.get(element))
-            if file_count > 0:
-                print(f"{element}: {file_count}")
-
-
-    
