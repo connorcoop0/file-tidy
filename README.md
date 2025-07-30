@@ -48,7 +48,6 @@ optional arguments:
 
 File organization settings:
   -o, --organize         Organize files into categorized folders
-  -s, --summary          Print a summary of files moved
 
 De-duplication settings:
   -d, --dedupe           Run duplicate detection
