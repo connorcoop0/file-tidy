@@ -8,7 +8,6 @@ File Tidy is a Python command-line tool that helps manage cluttered directories 
 - Optional recursive search and extension filtering
 - Multiple deletion modes: dry-run, file-by-file confirmation, or force delete
 - File organization into categorized folders (Documents, Images, Audio, etc.)
-- Optional summary output of organized files
 - Built-in protection against empty directory creation and accidental overwrites
 
 ## Usage
@@ -16,25 +15,25 @@ File Tidy is a Python command-line tool that helps manage cluttered directories 
 Deduplicate all files in the current directory:
 
 ```
-python tidy.py --dedupe
+python file-tidy.py --dedupe
 ```
 
 Deduplicate all `.txt` files recursively with confirmation:
 
 ```
-python tidy.py --dedupe --recursive --extension txt --file-by-file
+python file-tidy.py --dedupe --recursive --extension txt --file-by-file
 ```
 
-Organize files into folders and print a summary:
+Organize files into categorized folders:
 
 ```
-python tidy.py --organize --summary
+python file-tidy.py --organize
 ```
 
 Force delete all detected duplicates without confirmation:
 
 ```
-python tidy.py --dedupe --force-delete
+python file-tidy.py --dedupe --force-delete
 ```
 
 ## Arguments
